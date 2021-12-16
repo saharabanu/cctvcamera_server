@@ -36,6 +36,33 @@ async function run() {
           res.json(product);
 
           });
+          // get single product  api 
+        app.get('/singleProduct/:id', async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: ObjectId(id) };
+          const result = await productsCollection.findOne(query);
+          res.json(result)
+
+      })
+
+           // update product api 
+        app.put('/products/:id', async (req, res) => {
+          const id = req.params.id;
+          const updatedProduct = req.body;
+          const filter = { _id: ObjectId(id) };
+          const options = { upsert: true }
+          const updateDoc = {
+              $set: {
+                  name: updatedProduct.name,
+                  img: updatedProduct.img,
+                  price: updatedProduct.price,
+                  description: updatedProduct.description,
+                  size:updatedProduct.size
+              }
+          }
+          const result = await productsCollection.updateOne(filter, updateDoc, options)
+          res.json(result)
+      });
 
 
           
@@ -96,6 +123,13 @@ app.get('/catagoriesOrder', async (req, res) => {
   res.json(result)
  });
   
+  // delete product  api 
+  app.delete('/productDelete/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const result = await products.deleteOne(query);
+    res.json(result)
+})
 
 
              // post api 
