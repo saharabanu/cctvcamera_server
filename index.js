@@ -18,6 +18,54 @@ async function run() {
         await client.connect();
         const database = client.db('cctvcamera_products');
         const productsCollection = database.collection('products');
+        const ordersCollection= database.collection("orders");
+
+           // get api  
+           app.get('/products',async(req,res)=>{
+            const cursor = productsCollection.find({});
+            const products = await cursor.toArray();
+            res.send(products)
+        });
+
+          //  get single product api 
+        app.get('/products/:id',async(req,res)=>{
+          const id = req.params.id;
+          const query = { _id:ObjectId(id) };
+          const product = await productsCollection.findOne(query);
+          res.json(product);
+
+          });
+
+
+          
+    //post order api 
+  app.post("/orders", async (req, res) => {
+    const result = await ordersCollection.insertOne(req.body);
+    res.send(result);
+  });
+
+  ///get  all orders
+  app.get("/orders", async (req, res) => {
+    const result = await ordersCollection.find({}).toArray();
+    res.send(result);
+  });
+  //Get single user orders
+  app.get('/myOrders/:email', async (req, res) => {
+    const email = req.params.email;
+    const query = { email: email };
+    const order = await ordersCollection.find(query).toArray();
+    res.send(order)
+});
+
+ //Delete Order
+ app.delete('/orderDelete/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: ObjectId(id) };
+  const result = await ordersCollection.deleteOne(query);
+
+  res.json(result)
+ });
+  
 
 
              // post api 
