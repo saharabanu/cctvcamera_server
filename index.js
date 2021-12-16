@@ -19,6 +19,7 @@ async function run() {
         const database = client.db('cctvcamera_products');
         const productsCollection = database.collection('products');
         const ordersCollection= database.collection("orders");
+        const reviewsCollection = database.collection('Reviews');
 
            // get api  
            app.get('/products',async(req,res)=>{
@@ -57,6 +58,35 @@ async function run() {
     res.send(order)
 });
 
+  // order status update api 
+  app.put('/orderStatusUpdate/:id', async (req, res) => {
+    const id = req.params.id;
+    const newStatus = req.body;
+    const filter = { _id: ObjectId(id) };
+    const options = { upsert: true };
+    const updatePackage = {
+        $set: {
+            status: newStatus.Status
+        }
+    }
+    const result = await orders.updateOne(filter, updatePackage, options)
+    res.json(result)
+})
+
+// get  sub catagories order  api 
+app.get('/catagoriesOrder', async (req, res) => {
+  const status = req.query.status;
+  const query = { status: status };
+  let cursor = {}
+  if (status) {
+      cursor = orders.find(query);
+  } else {
+      cursor = orders.find({});
+  }
+  const result = await cursor.toArray();
+  res.json(result)
+})
+
  //Delete Order
  app.delete('/orderDelete/:id', async (req, res) => {
   const id = req.params.id;
@@ -74,6 +104,19 @@ async function run() {
         const result =await productsCollection.insertOne(product);
         res.json(result)
     });
+
+    // reviews post api 
+    app.post('/reviews', async (req, res) => {
+      const data = req.body;
+      const result = await reviewsCollection.insertOne(data);
+      res.json(result);
+  })
+   // reviews get api 
+   app.get('/reviews', async (req, res) => {
+    const cursor = reviewsCollection.find({});
+    const result = await cursor.toArray();
+    res.json(result)
+})
 
         
     }
