@@ -9,12 +9,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 const port = process.env.PORT || 5000;
 
-// cctv-camera-ee776-firebase-adminsdk.json
-
-
-
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-// require('./cctv-camera-ee776-firebase-adminsdk.json');
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
