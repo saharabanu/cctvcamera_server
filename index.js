@@ -5,6 +5,7 @@ const admin = require("firebase-admin");
 require('dotenv').config();
 const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require('mongodb');
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 const port = process.env.PORT || 5000;
 
@@ -90,6 +91,7 @@ async function run() {
               }
           }
           const result = await productsCollection.updateOne(filter, updateDoc, options)
+          console.log(result)
           res.json(result)
       });
 
@@ -156,7 +158,7 @@ app.get('/catagoriesOrder', async (req, res) => {
   app.delete('/productDelete/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
-    const result = await products.deleteOne(query);
+    const result = await productsCollection.deleteOne(query);
     res.json(result)
 })
 
@@ -227,6 +229,17 @@ app.get('/users/:email', async (req, res) => {
   }
   
 })
+// pay post api 
+// app.post('/create-payment-intent', async(req,res)=>{
+//   const paymentInfo = req.body;
+//   const amount = paymentInfo.price* 100;
+//   const paymentIntent = await stripe.paymentIntents.create({
+//     currency='usd',
+//     amount: amount,
+//     payment_method_types: ['card']
+//   });
+//   res.json({clientSecret: paymentIntent.client_secret})
+// })
 
         
     }
